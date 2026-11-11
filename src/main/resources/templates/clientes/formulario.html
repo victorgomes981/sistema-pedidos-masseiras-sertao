@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Cliente - Masseiras do Sertão</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8ee;
+            color: #333;
+        }
+
+        header {
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        main {
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            background-color: #d98b32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b97020;
+        }
+
+        .voltar {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #8b4513;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Masseiras do Sertão</h1>
+        <p>Sistema de Controle de Pedidos</p>
+    </header>
+
+    <main>
+        <h2>Cadastrar Cliente</h2>
+
+        <form th:action="@{/clientes/salvar}"
+              th:object="${cliente}"
+              method="post">
+
+            <label for="nome">Nome do cliente</label>
+            <input type="text"
+                   id="nome"
+                   th:field="*{nome}"
+                   required
+                   maxlength="255"
+                   placeholder="Digite o nome completo">
+
+            
+            <p th:if="${#fields.hasErrors('nome')}"
+                th:errors="*{nome}"
+                style="color: #b42318;
+                     font-size: 14px;
+                    margin-top: 8px;">
+            </p>
+
+
+            <label for="telefone">Telefone</label>
+            <input type="tel"
+                   id="telefone"
+                   th:field="*{telefone}"
+                   maxlength="20"
+                   placeholder="Ex.: (74) 99999-9999">
+
+            <button type="submit">Salvar Cliente</button>
+        </form>
+
+        <a class="voltar" th:href="@{/}">Voltar ao início</a>
+    </main>
+</body>
+</html>

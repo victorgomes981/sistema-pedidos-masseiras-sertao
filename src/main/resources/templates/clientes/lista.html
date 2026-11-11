@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Masseiras do Sertão</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8ee;
+            color: #333;
+        }
+
+        header {
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4e2cb;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 12px 18px;
+            background-color: #d98b32;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-left: 15px;
+            color: #8b4513;
+        }
+
+        .tabela {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Masseiras do Sertão</h1>
+        <p>Sistema de Controle de Pedidos</p>
+    </header>
+
+    <main>
+        <h2>Clientes Cadastrados</h2>
+
+<div th:if="${mensagem}"
+     style="background-color: #e8f5e9;
+            color: #256029;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;">
+
+    <span th:text="${mensagem}"></span>
+
+</div>
+
+
+        <div class="tabela">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="cliente : ${clientes}">
+                        <td th:text="${cliente.id}"></td>
+                        <td th:text="${cliente.nome}"></td>
+                        <td th:text="${cliente.telefone}"></td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(clientes)}">
+                        <td colspan="3">Nenhum cliente cadastrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a class="botao" th:href="@{/clientes/novo}">
+            + Cadastrar Novo Cliente
+        </a>
+
+        <a class="voltar" th:href="@{/}">
+            Voltar ao início
+        </a>
+    </main>
+</body>
+</html>

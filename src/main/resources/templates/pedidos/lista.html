@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Pedidos - Masseiras do Sertão</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8ee;
+            color: #333;
+        }
+
+        header {
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h2 {
+            text-align: center;
+            color: #8b4513;
+        }
+
+        .mensagem {
+            background-color: #e3f4e5;
+            color: #256c35;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tabela {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5e1c8;
+            color: #65320e;
+        }
+
+        .status {
+            background-color: #fff0c2;
+            color: #785500;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .form-status {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        select {
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .atualizar {
+            padding: 9px;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .atualizar:hover {
+            background-color: #65320e;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #d98b32;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .editar {
+            display: block;
+            text-align: center;
+            padding: 9px;
+            background-color: #d98b32;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .excluir {
+            width: 100%;
+            padding: 9px;
+            background-color: #b42318;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .excluir:hover {
+            background-color: #8f1c13;
+        }
+
+        .voltar {
+            display: block;
+            margin-top: 20px;
+            color: #8b4513;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Masseiras do Sertão</h1>
+        <p>Sistema de Controle de Pedidos</p>
+    </header>
+
+    <main>
+
+        <h2>Pedidos Cadastrados</h2>
+
+        <div class="mensagem"
+             th:if="${mensagem}"
+             th:text="${mensagem}">
+        </div>
+
+        <a class="botao" th:href="@{/pedidos/novo}">
+            + Novo Pedido
+        </a>
+
+        <div class="tabela">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Cliente</th>
+                        <th>Produto e Quantidade</th>
+                        <th>Data de Entrega</th>
+                        <th>Status Atual</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:each="pedido : ${pedidos}">
+
+                        <td th:text="${pedido.id}"></td>
+
+                        <td th:text="${pedido.cliente.nome}"></td>
+
+                        <td>
+                            <div th:each="item : ${itens}">
+                                <span th:if="${item.pedido.id == pedido.id}">
+                                    <span th:text="${item.produto.nome}"></span>
+                                    —
+                                    <span th:text="${item.quantidade}"></span>
+                                    unidade(s)
+                                </span>
+                            </div>
+                        </td>
+
+                        <td th:text="${#temporals.format(
+                            pedido.dataEntrega, 'dd/MM/yyyy'
+                        )}"></td>
+
+                        <td>
+                            <span class="status"
+                                  th:text="${pedido.status}">
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <!-- Atualizar status -->
+                            <form class="form-status"
+                                  th:action="@{/pedidos/atualizar-status}"
+                                  method="post">
+
+                                <input type="hidden"
+                                       name="pedidoId"
+                                       th:value="${pedido.id}">
+
+                                <select name="status" required>
+
+                                    <option value="Pendente"
+                                            th:selected="${pedido.status == 'Pendente'}">
+                                        Pendente
+                                    </option>
+
+                                    <option value="Em produção"
+                                            th:selected="${pedido.status == 'Em produção'}">
+                                        Em produção
+                                    </option>
+
+                                    <option value="Pronto"
+                                            th:selected="${pedido.status == 'Pronto'}">
+                                        Pronto
+                                    </option>
+
+                                    <option value="Entregue"
+                                            th:selected="${pedido.status == 'Entregue'}">
+                                        Entregue
+                                    </option>
+
+                                    <option value="Cancelado"
+                                            th:selected="${pedido.status == 'Cancelado'}">
+                                        Cancelado
+                                    </option>
+
+                                </select>
+
+                                <button class="atualizar" type="submit">
+                                    Atualizar
+                                </button>
+
+                            </form>
+
+                            <a class="editar"
+   th:href="@{/pedidos/detalhes(id=${pedido.id})}">
+    Visualizar
+</a>
+
+                            <!-- Editar pedido -->
+                            <a class="editar"
+                               th:href="@{/pedidos/editar(id=${pedido.id})}">
+                                Editar
+                            </a>
+
+                            <!-- Excluir pedido -->
+                            <form th:action="@{/pedidos/excluir}"
+                                  method="post"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir este pedido?');">
+
+                                <input type="hidden"
+                                       name="pedidoId"
+                                       th:value="${pedido.id}">
+
+                                <button class="excluir" type="submit">
+                                    Excluir
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="6">
+                            Nenhum pedido cadastrado até o momento.
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <a class="voltar" th:href="@{/}">
+            ← Voltar ao início
+        </a>
+
+    </main>
+
+</body>
+</html>

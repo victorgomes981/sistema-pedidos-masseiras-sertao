@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pedido - Masseiras do Sertão</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8ee;
+            color: #333;
+        }
+
+        header {
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        main {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h2 {
+            text-align: center;
+            color: #8b4513;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .produto-item {
+            background-color: #fff8ee;
+            border: 1px solid #ead5bd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .produto-item label {
+            margin-top: 10px;
+        }
+
+        .botao-adicionar {
+            margin-top: 18px;
+            padding: 11px 16px;
+            background-color: #4b8060;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .botao-adicionar:hover {
+            background-color: #356447;
+        }
+
+        .botao-remover {
+            margin-top: 12px;
+            padding: 9px 14px;
+            background-color: #b42318;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .botao-remover:hover {
+            background-color: #8f1c13;
+        }
+
+        .salvar {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            background-color: #d98b32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .salvar:hover {
+            background-color: #b97020;
+        }
+
+        .voltar {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #8b4513;
+        }
+
+        .subtitulo {
+            color: #8b4513;
+            margin-top: 30px;
+            border-bottom: 1px solid #ead5bd;
+            padding-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Masseiras do Sertão</h1>
+    <p>Sistema de Controle de Pedidos</p>
+</header>
+
+<main>
+
+    <h2 th:text="${pedido.id == null ? 'Novo Pedido' : 'Editar Pedido'}">
+        Novo Pedido
+    </h2>
+
+    <form th:action="${pedido.id == null}
+                ? @{/pedidos/salvar}
+                : @{/pedidos/atualizar}"
+          method="post">
+
+        <input type="hidden"
+               name="pedidoId"
+               th:if="${pedido.id != null}"
+               th:value="${pedido.id}">
+
+        <!-- DADOS DO PEDIDO -->
+
+        <label for="cliente">Cliente</label>
+
+        <select id="cliente" name="clienteId" required>
+
+            <option value="">Selecione um cliente</option>
+
+            <option th:each="cliente : ${clientes}"
+                    th:value="${cliente.id}"
+                    th:text="${cliente.nome}"
+                    th:selected="${pedido.cliente != null
+                        and pedido.cliente.id == cliente.id}">
+            </option>
+
+        </select>
+
+        <label for="dataEntrega">Data de entrega</label>
+
+        <input type="date"
+               id="dataEntrega"
+               name="dataEntrega"
+               th:value="${pedido.dataEntrega}"
+               required>
+
+        <!-- PRODUTOS DO PEDIDO -->
+
+        <h3 class="subtitulo">Produtos do pedido</h3>
+
+        <div id="itens-container">
+
+            <div class="produto-item"
+                 th:each="item : ${itensPedido}">
+
+                <label>Produto</label>
+
+                <select name="produtoIds" required>
+
+                    <option value="">Selecione um produto</option>
+
+                    <option th:each="produto : ${produtos}"
+                            th:value="${produto.id}"
+                            th:text="${produto.nome}"
+                            th:selected="${item.produto != null
+                                and item.produto.id == produto.id}">
+                    </option>
+
+                </select>
+
+                <label>Quantidade</label>
+
+                <input type="number"
+                       name="quantidades"
+                       min="1"
+                       th:value="${item.quantidade != null
+                           ? item.quantidade : 1}"
+                       required>
+
+                <button type="button"
+                        class="botao-remover"
+                        onclick="removerProduto(this)">
+                    Remover produto
+                </button>
+
+            </div>
+
+        </div>
+
+        <button type="button"
+                class="botao-adicionar"
+                onclick="adicionarProduto()">
+            + Adicionar outro produto
+        </button>
+
+        <!-- OBSERVAÇÕES -->
+
+        <label for="observacoes">Observações</label>
+
+        <textarea id="observacoes"
+                  name="observacoes"
+                  rows="4"
+                  maxlength="1000"
+                  th:text="${pedido.observacoes}"
+                  placeholder="Ex.: Entregar pela manhã">
+        </textarea>
+
+        <!-- SALVAR -->
+
+        <button type="submit"
+                class="salvar"
+                th:text="${pedido.id == null
+                    ? 'Salvar Pedido' : 'Salvar Alterações'}">
+            Salvar Pedido
+        </button>
+
+    </form>
+
+    <a class="voltar" th:href="@{/pedidos}">
+        Voltar aos pedidos
+    </a>
+
+</main>
+
+<script>
+
+    function adicionarProduto() {
+
+        const container = document.getElementById("itens-container");
+
+        const primeiroItem = container.querySelector(".produto-item");
+
+        const novoItem = primeiroItem.cloneNode(true);
+
+        // Limpa o produto selecionado
+        const select = novoItem.querySelector("select");
+        select.selectedIndex = 0;
+
+        // Reinicia a quantidade
+        const quantidade = novoItem.querySelector("input");
+        quantidade.value = 1;
+
+        container.appendChild(novoItem);
+    }
+
+    function removerProduto(botao) {
+
+        const container = document.getElementById("itens-container");
+
+        const itens = container.querySelectorAll(".produto-item");
+
+        if (itens.length > 1) {
+
+            botao.closest(".produto-item").remove();
+
+        } else {
+
+            alert("O pedido precisa ter pelo menos um produto.");
+
+        }
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes do Pedido - Masseiras do Sertão</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8ee;
+            color: #333;
+        }
+
+        header {
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        main {
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h2 {
+            text-align: center;
+            color: #8b4513;
+            margin-bottom: 30px;
+        }
+
+        .informacao {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .informacao strong {
+            color: #8b4513;
+        }
+
+        .produto {
+            background-color: #fff8ee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            background-color: #fff0c2;
+            color: #785500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .observacoes {
+            background-color: #f5e1c8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            min-height: 40px;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 20px;
+            background-color: #8b4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .voltar:hover {
+            background-color: #65320e;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Masseiras do Sertão</h1>
+        <p>Sistema de Controle de Pedidos</p>
+    </header>
+
+    <main>
+
+        <h2>Detalhes do Pedido</h2>
+
+        <div class="informacao">
+            <strong>Número do pedido:</strong>
+            <span th:text="${pedido.id}"></span>
+        </div>
+
+        <div class="informacao">
+            <strong>Cliente:</strong>
+            <span th:text="${pedido.cliente.nome}"></span>
+        </div>
+
+        <div class="informacao">
+            <strong>Data de entrega:</strong>
+            <span th:text="${#temporals.format(
+                pedido.dataEntrega, 'dd/MM/yyyy'
+            )}"></span>
+        </div>
+
+        <div class="informacao">
+            <strong>Status:</strong>
+            <span class="status"
+                  th:text="${pedido.status}">
+            </span>
+        </div>
+
+        <div class="informacao">
+            <strong>Produtos do pedido:</strong>
+
+            <div th:each="item : ${itens}" class="produto">
+
+                <p>
+                    <strong>Produto:</strong>
+                    <span th:text="${item.produto.nome}"></span>
+                </p>
+
+                <p>
+                    <strong>Quantidade:</strong>
+                    <span th:text="${item.quantidade}"></span>
+                    unidade(s)
+                </p>
+
+            </div>
+        </div>
+
+        <div class="informacao">
+            <strong>Observações:</strong>
+
+            <div class="observacoes">
+                <span th:if="${pedido.observacoes != null
+                    and !pedido.observacoes.isEmpty()}"
+                    th:text="${pedido.observacoes}">
+                </span>
+
+                <span th:if="${pedido.observacoes == null
+                    or pedido.observacoes.isEmpty()}">
+                    Nenhuma observação registrada.
+                </span>
+            </div>
+        </div>
+
+        <a class="voltar" th:href="@{/pedidos}">
+            ← Voltar aos pedidos
+        </a>
+
+    </main>
+
+</body>
+</html>
